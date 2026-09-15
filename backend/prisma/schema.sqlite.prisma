@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String        @id @default(cuid())
+  username          String        @unique
+  email             String        @unique
+  passwordHash      String
+  points            Int           @default(0)
+  lastDailyRewardAt DateTime?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  purchases         Purchase[]
+  dailyRewards      DailyReward[]
+  solves            Solve[]
+}
+
+model Challenge {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  description String
+  flagHash    String
+  points      Int      @default(500)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  solves      Solve[]
+}
+
+model Purchase {
+  id        String   @id @default(cuid())
+  userId    String
+  amount    Int
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model DailyReward {
+  id        String   @id @default(cuid())
+  userId    String
+  amount    Int
+  awardedAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Solve {
+  id          String   @id @default(cuid())
+  userId      String
+  challengeId String
+  solvedAt    DateTime @default(now())
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  @@unique([userId, challengeId])
+}
