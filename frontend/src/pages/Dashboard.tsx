@@ -19,7 +19,7 @@ export default function Dashboard() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [claiming, setClaiming] = useState(false);
-  const [tick, setTick] = useState(0);
+  const [now, setNow] = useState(Date.now());
   const { push } = useToast();
   const { refresh } = useAuth();
 
@@ -36,11 +36,9 @@ export default function Dashboard() {
 
   useEffect(() => {
     load();
-  }, []);
-
-  useEffect(() => {
-    const t = setInterval(() => setTick((x) => x + 1), 1000);
+    const t = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function claimDaily() {
@@ -65,7 +63,7 @@ export default function Dashboard() {
 
   const { user, daily, challenge, doroCost } = data;
   const nextMs = daily.nextAvailableAt
-    ? new Date(daily.nextAvailableAt).getTime() - Date.now()
+    ? new Date(daily.nextAvailableAt).getTime() - now
     : 0;
   const canClaim = daily.canClaim;
 
@@ -132,7 +130,9 @@ export default function Dashboard() {
           </div>
           <div className="text-lg font-bold">{challenge.title}</div>
           <div className="mt-2 text-sm text-gray-400">
-            Cost: <span className="text-accent font-mono">{challenge.cost}</span> points
+            Cost:{" "}
+            <span className="text-accent font-mono">{challenge.cost}</span>{" "}
+            points
           </div>
           <div className="mt-2">
             <span
