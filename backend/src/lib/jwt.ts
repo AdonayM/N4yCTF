@@ -24,8 +24,8 @@ export function verifyToken(token: string): JwtPayload {
 export const AUTH_COOKIE = "n4y_token";
 export const COOKIE_OPTIONS = {
   httpOnly: true,
-  sameSite: "lax" as const,
-  secure: process.env.NODE_ENV === "production",
+  sameSite: "none" as const,
+  secure: true,
   maxAge: 7 * 24 * 60 * 60 * 1000,
   path: "/",
 };
